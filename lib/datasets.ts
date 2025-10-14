@@ -52,19 +52,6 @@ export function makeCircles(n = 200) {
     return { x, y };
 }
 
-export function makeMoons(n = 200, noise = 0.1) {
-    const x: number[][] = [];
-    const y: number[][] = [];
-    for (let i = 0; i < n; i++) {
-        const t = Math.PI * (i / (n / 2));
-        const r = 1;
-        const sign = i < n / 2 ? 0 : 1;
-        const angle = t + (sign === 0 ? 0 : Math.PI);
-        x.push([Math.cos(angle) + (Math.random() - 0.5) * noise, Math.sin(angle) + (Math.random() - 0.5) * noise]);
-        y.push([sign]);
-    }
-    return { x, y };
-}
 export function makeConcentricGaussians(n = 300) {
     const x: number[][] = [];
     const y: number[][] = [];

@@ -205,7 +205,7 @@ export default function XOR() {
                                 <label className="text-sm">Optimizer</label>
                                 <select
                                     value={opts.optimizer ?? "sgd"}
-                                    onChange={(e) => applyOptions({ optimizer: e.target.value as any })}
+                                    onChange={(e) => applyOptions({ optimizer: e.target.value as NNOptions["optimizer"] })}
                                     className="w-full bg-[#111111] border border-gray-700 text-gray-100 p-1 rounded"
                                 >
                                     <option value="sgd">SGD</option>
