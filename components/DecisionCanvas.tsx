@@ -82,7 +82,7 @@ export default function DecisionCanvas({
             const sx = ((px - xmin) / (xmax - xmin)) * width;
             const sy = ((py - ymin) / (ymax - ymin)) * height;
             ctx.beginPath();
-            ctx.arc(sx, sy, 6, 0, Math.PI * 2);
+            ctx.arc(sx, sy, 3, 0, Math.PI * 2);
             ctx.fillStyle = label ? "rgba(0,0,0,0.95)" : "rgba(0,0,0,0.95)";
             ctx.fill();
             ctx.lineWidth = 1.5;

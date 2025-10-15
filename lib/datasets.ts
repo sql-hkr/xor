@@ -5,7 +5,7 @@ export const DATASET_NAMES: DatasetName[] = ["xor", "spiral", "circles", "gaussi
 export function makeDataset(name: DatasetName, n = 200) {
     switch (name) {
         case "xor":
-            return makeXOR();
+            return makeXOR(n);
         case "spiral":
             return makeSpiral(n);
         case "circles":
@@ -15,15 +15,51 @@ export function makeDataset(name: DatasetName, n = 200) {
     }
 }
 
-export function makeXOR() {
-    const x = [
+
+
+export function makeXOR(n = 200, spread = 0.18) {
+    // generate noisy clusters around the four XOR corners so the dataset
+    // includes the canonical points and surrounding areas for learning
+    const centers = [
         [0, 0],
         [0, 1],
         [1, 0],
         [1, 1],
     ];
-    const y = [[0], [1], [1], [0]];
+    const labels = [0, 1, 1, 0];
+    const x: number[][] = [];
+    const y: number[][] = [];
+
+    function randn() {
+        let u = 0,
+            v = 0;
+        while (u === 0) u = Math.random();
+        while (v === 0) v = Math.random();
+        return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    }
+
+    const per = Math.floor(n / 4);
+    for (let ci = 0; ci < centers.length; ci++) {
+        for (let i = 0; i < per; i++) {
+            const sx = centers[ci][0] + randn() * spread;
+            const sy = centers[ci][1] + randn() * spread;
+            x.push([sx, sy]);
+            y.push([labels[ci]]);
+        }
+    }
+    // add remainder samples
+    let rem = n - x.length;
+    while (rem > 0) {
+        const ci = Math.floor(Math.random() * centers.length);
+        const sx = centers[ci][0] + randn() * spread;
+        const sy = centers[ci][1] + randn() * spread;
+        x.push([sx, sy]);
+        y.push([labels[ci]]);
+        rem--;
+    }
+
     return { x, y };
+
 }
 
 export function makeSpiral(n = 200) {
