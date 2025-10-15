@@ -13,7 +13,10 @@ export type NNState = {
     layers: number[];
     activations: number[][];
     params: number[][][]; // weights [layer][out][in]
+    bias: number[][]; // biases [layer][out]
     lossHistory: number[];
+    testLossHistory?: number[];
+    testAccHistory?: number[];
     stepHistory: number[];
     testLoss?: number;
     testAcc?: number;
@@ -35,6 +38,8 @@ export class SimpleNN {
     params: number[][][] = [];
     bias: number[][] = [];
     lossHistory: number[] = [];
+    testLossHistory: number[] = [];
+    testAccHistory: number[] = [];
     stepHistory: number[] = [];
     // Adam state
     adam_m: number[][][] = [];
@@ -70,6 +75,8 @@ export class SimpleNN {
             this.adam_vbias.push(Array.from({ length: outN }, () => 0));
         }
         this.lossHistory = [];
+        this.testLossHistory = [];
+        this.testAccHistory = [];
         this.stepHistory = [];
     }
 
@@ -110,7 +117,7 @@ export class SimpleNN {
         return out;
     }
 
-    trainStep(dataset: { x: number[][]; y: number[][] }) {
+    trainStep(dataset: { x: number[][]; y: number[][] }, testDataset?: { x: number[][]; y: number[][] }) {
         const { x, y } = dataset;
         const bs = Math.min(this.opts.batchSize, x.length);
         const idx = Array.from({ length: x.length }, (_, i) => i).sort(() => Math.random() - 0.5).slice(0, bs);
@@ -211,6 +218,12 @@ export class SimpleNN {
 
         const avgLoss = totalLoss / bs;
         this.lossHistory.push(avgLoss);
+        if (testDataset) {
+            const tloss = this.evaluate(testDataset);
+            this.testLossHistory.push(tloss);
+            const tacc = this.evaluateAcc(testDataset);
+            this.testAccHistory.push(tacc);
+        }
         this.stepHistory.push((this.stepHistory[this.stepHistory.length - 1] || 0) + 1);
     }
 
@@ -222,7 +235,10 @@ export class SimpleNN {
             layers: this.opts.layers,
             activations: activations,
             params: this.params,
+            bias: this.bias,
             lossHistory: this.lossHistory,
+            testLossHistory: this.testLossHistory,
+            testAccHistory: this.testAccHistory,
             stepHistory: this.stepHistory,
             testLoss,
             testAcc,
